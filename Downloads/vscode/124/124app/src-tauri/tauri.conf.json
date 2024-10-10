@@ -20,7 +20,8 @@
     },
     "windows": [
       {
-        "title": "app",
+        "title": "IDE",
+        "url": "index.html",
         "width": 800,
         "height": 600
       }
