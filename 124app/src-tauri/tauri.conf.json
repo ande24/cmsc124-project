@@ -20,21 +20,10 @@
     },
     "windows": [
       {
-        "label": "splashscreen",
-        "url": "splash.html",
-        "width": 400,
-        "height": 300,
-        "decorations": false,   
-        "resizable": false,
-        "fullscreen": false,
-        "transparent": false
-      },
-      {
         "title": "main",
         "url": "index.html",
         "width": 800,
-        "height": 600,
-        "visible": false
+        "height": 600
       }
     ],
     "security": {
