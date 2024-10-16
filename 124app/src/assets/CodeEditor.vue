@@ -1,4 +1,5 @@
 <template>
+    <Toolbar />
     <div class="editor"> 
         <vue-monaco-editor
           v-model:value="code"
@@ -11,6 +12,7 @@
 
 <script lang="ts" setup>
     import { ref, shallowRef } from 'vue'
+    import Toolbar from './Toolbar.vue'
 
     const MONACO_EDITOR_OPTIONS = {
     automaticLayout: true,
