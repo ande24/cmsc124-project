@@ -24,7 +24,7 @@
       <v-btn id="redo" @click="redo" icon>
         <v-icon class="icons">mdi-redo</v-icon>
       </v-btn>
-      
+  
       <!-- Spacer pushes the compile and execute buttons to the right -->
       <v-spacer></v-spacer>
   
@@ -41,7 +41,18 @@
   </template>
   
   <script>
-    /*functions here*/
+    export default {
+        methods: {
+            openNewFile() {
+            this.$emit('fileOpened'); // Emit event when a new file is created
+            },
+            openExistingFile() {
+            this.$emit('fileOpened'); // Emit event when an existing file is opened
+            },
+            compileCode() { /* logic for compiling code */ },
+            executeCode() { /* logic for executing code */ }
+        }
+        };
   </script>
   
 <style>
