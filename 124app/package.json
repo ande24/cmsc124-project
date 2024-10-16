@@ -10,6 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.4",
     "@tauri-apps/api": "^1",
     "vue": "^3.3.4",
     "vuetify": "^3.7.2"
