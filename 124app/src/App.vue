@@ -4,10 +4,20 @@ import Toolbar from './assets/Toolbar.vue';
 </script>
 
 <template>
-  <h1>code editor</h1>
-  <div>
+  <div class="container">
     <Toolbar />
     <CodeEditor />
   </div>
 </template>
 
+<style>
+  .container {
+    display: flex;
+    flex-direction: column; 
+    height: 100vh; 
+  }
+
+  .CodeEditor {
+    flex-grow: 1; 
+  }
+</style>

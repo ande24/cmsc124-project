@@ -34,6 +34,7 @@
 <style>
     .v-toolbar {
         background-color: #1e1e1e; 
+        width: 100%;
     }
 
     .custom-divider {
