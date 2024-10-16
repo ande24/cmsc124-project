@@ -132,9 +132,15 @@ h2 {
 }
 .existing-file {
   display: flex;
+  margin-top: 30px;
   margin-left: 200px;
   margin-right: 200px;
   padding-top: 30px;
+  padding-bottom: 30px;
   justify-content: space-around;
+  background-color: #02123c;
+}
+.existing-file-button {
+  padding: 125px;
 }
 </style>
