@@ -10,6 +10,8 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.4",
+    "@mdi/font": "^7.4.47",
     "@tauri-apps/api": "^1",
     "tauri": "^0.15.0",
     "vue": "^3.3.4",
