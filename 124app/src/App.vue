@@ -15,6 +15,7 @@ import Toolbar from './assets/Toolbar.vue';
     display: flex;
     flex-direction: column; 
     height: 100vh; 
+    width: 100vw;
   }
 
   .CodeEditor {
