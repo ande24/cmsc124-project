@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splashscreen</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #282c34;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .splash-content {
+      text-align: center;
+    }
+    .splash-title {
+      font-size: 2em;
+      font-weight: bold;
+    }
+    .splash-subtitle {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-content">
+    <div class="splash-title">insert language name here</div>
+    <div class="splash-subtitle">Llenes, Magdugo, Retuya</div>
+  </div>
+
+  <!-- Add the Tauri API -->
+  <script type="module">
+    import { invoke } from '@tauri-apps/api/tauri';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("Splash screen loaded");
+      setTimeout(() => {
+        console.log("Closing splash screen after 5 seconds");
+        invoke('close_splashscreen')
+          .catch((err) => console.error("Error closing splash screen:", err));
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
