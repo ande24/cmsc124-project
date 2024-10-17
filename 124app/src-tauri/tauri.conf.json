@@ -33,7 +33,9 @@
       "height": 200,
       "decorations": false,
       "url": "splashscreen.html",
-      "label": "splashscreen"
+      "label": "splashscreen",
+      "center": true,
+      "resizable": false
     }
   ],
     "security": {
