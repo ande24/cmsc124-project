@@ -43,8 +43,9 @@
   
   <style scoped>
   .navbar {
-    background-color: #4d4d4d;
+    background-color: #1e1e1e;
     padding: 10px;
+    padding-left: 24px;
   }
   
   .navbar-nav {
@@ -57,6 +58,8 @@
   .nav-item {
     margin-right: 20px;
     position: relative;
+    font-family: "fira code", monospace;
+    font-weight: lighter;
   }
   
   .nav-link {

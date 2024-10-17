@@ -48,18 +48,19 @@
   .v-toolbar {
     background-color: #1e1e1e;
     width: 100%;
-    padding-right: 12px;
-    padding-left: 12px;
+    padding-right: 16px;
   }
   
   /* Shrink the icons to 75% */
   .v-btn {
-    transform: scale(0.75); /* Shrink the buttons (and icons inside) to 75% */
+    transform: scale(0.75); 
+    transform-origin: center;/* Shrink the buttons (and icons inside) to 75% */
   }
   
   .icons {
     color: white; /* Icon color */
-    padding-right: 24px;
+    padding-right: 12px;
+    padding-left: 12px;
   }
   
   /* Shrink the icons to 75% */
