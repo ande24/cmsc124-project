@@ -4,11 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Splashscreen</title>
-  
+  <link rel="stylesheet" href="./splashscreen.css">
 </head>
 <body>
-  <div>insert language name here</div>
-  <div>Llenes, Magdugo, Retuya</div>
+  <div class="splash-container">
+    <div class="splash-box">
+      <h1 class="splash-title">language</h1>
+      <h2 class="splash-text" id="andee">Llenes</h2>
+      <h2 class="splash-text" id="gab">Magdugo</h2>
+      <h2 class="splash-text" id="mon">Retuya</h2>
+    </div>
+  </div>
 
   <script type="module">
     import { invoke } from '@tauri-apps/api/tauri';
@@ -16,7 +22,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         invoke('close_splashscreen')
-      }, 5000);
+      }, 10000);
     });
   </script>
 </body>
