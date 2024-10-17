@@ -1,4 +1,5 @@
 <template>
+    <Navbar />
     <Toolbar />
     <div class="editor"> 
         <vue-monaco-editor
@@ -13,6 +14,7 @@
 <script lang="ts" setup>
     import { ref, shallowRef } from 'vue'
     import Toolbar from './Toolbar.vue'
+    import Navbar from './main-screen/Navbar.vue'
 
     const MONACO_EDITOR_OPTIONS = {
     automaticLayout: true,

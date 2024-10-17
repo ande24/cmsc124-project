@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import CodeEditor from './assets/CodeEditor.vue';
 import Mainscreen from './assets/main-screen/Main-screen.vue';
+
+const newFileOpened = ref(false);
+
+const showEditor = () => {
+  newFileOpened.value = true; 
+};
+
 </script>
 
 <template>
   <div class="container">
-    <!-- <CodeEditor /> -->
-     <Mainscreen />
+    <CodeEditor v-if="newFileOpened"/>
+    <Mainscreen v-else @newFileClicked="showEditor" />
   </div>
 </template>
 

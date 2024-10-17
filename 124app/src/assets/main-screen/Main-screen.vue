@@ -64,7 +64,7 @@
           <div class="ide-name">
             <h1>AY DEE E</h1>
           </div>
-          <div class="new-file">
+          <div class="new-file" @click="newFileClicked">
             <button style="border: 4px solid white; border-radius: 40px;background-color: #02123c; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;"> New File </button>
           </div>
           <h2>Open existing file:</h2>
@@ -104,6 +104,10 @@ export default {
         this.activeRail = page; // Set the rail to the clicked page
       }
     },
+    newFileClicked() {
+      console.log("new file clicked");
+      this.$emit('newFileClicked');
+    }
   },
 };
 </script>
