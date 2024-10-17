@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "app",
+  "productName": "app",
     "version": "0.1.0"
   },
   "tauri": {
@@ -19,15 +19,27 @@
       }
     },
     "windows": [
-      {
-        "title": "IDE",
-        "url": "index.html",
-        "width": 1920,
-        "height": 1080,
+    {
+      "title": "main",
+      "url": "index.html",
+      "width": 1920,
+      "height": 1080,
         "maximized": true,
-        "fullscreen": false
-      }
-    ],
+        "fullscreen": false,
+      "resizable": true,
+      "fullscreen": false,
+      "visible": false
+    },
+    {
+      "width": 400,
+      "height": 200,
+      "decorations": false,
+      "url": "splashscreen.html",
+      "label": "splashscreen",
+      "center": true,
+      "resizable": false
+    }
+  ],
     "security": {
       "csp": null
     },
@@ -41,7 +53,7 @@
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
-      ]
-    }
+    ]
   }
+}
 }
