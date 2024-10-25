@@ -1,32 +1,138 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import CodeEditor from './assets/CodeEditor.vue';
 import Mainscreen from './assets/main-screen/Main-screen.vue';
+import Toolbar from './assets/Toolbar.vue';
 
-const newFileOpened = ref(false);
+interface File {
+  id: number;
+  name: string;
+  content: string;
+}
 
-const showEditor = () => {
-  newFileOpened.value = true; 
+const showEditor = ref(false);
+const files = ref<File[]>([]);
+const activeFileId = ref<number | null>(null);
+
+const activeFile = computed(() => files.value.find(f => f.id === activeFileId.value) || null);
+
+const createNewFile = () => {
+  const newFile: File = {
+    id: Date.now(),
+    name: `Untitled-${files.value.length + 1}.txt`,
+    content: ''
+  };
+  files.value.push(newFile);
+  activeFileId.value = newFile.id;
+  showEditor.value = true;
 };
 
+const openFile = (file: File) => {
+  activeFileId.value = file.id;
+};
+
+const closeFile = (fileId: number) => {
+  const index = files.value.findIndex(f => f.id === fileId);
+  if (index !== -1) {
+    files.value.splice(index, 1);
+    if (files.value.length === 0) {
+      showEditor.value = false;
+      activeFileId.value = null;
+    } else {
+      activeFileId.value = files.value[Math.min(index, files.value.length - 1)].id;
+    }
+  }
+};
+
+const updateFileContent = (fileId: number, content: string) => {
+  const file = files.value.find(f => f.id === fileId);
+  if (file) {
+    file.content = content;
+  }
+};
+
+const handleToolbarAction = (action: string, payload?: any) => {
+  switch (action) {
+    case 'newFile':
+      createNewFile();
+      break;
+    case 'updateContent':
+      if (activeFileId.value !== null) {
+        updateFileContent(activeFileId.value, payload);
+      }
+      break;
+    // Add more cases for other actions as needed
+  }
+};
 </script>
 
 <template>
   <div class="container">
-    <CodeEditor v-if="newFileOpened"/>
-    <Mainscreen v-else @newFileClicked="showEditor" />
+    <template v-if="showEditor">
+      <Toolbar @action="handleToolbarAction" />
+      <div class="tabs" role="tablist">
+        <button
+          v-for="file in files"
+          :key="file.id"
+          @click="openFile(file)"
+          :class="{ active: file.id === activeFileId }"
+          role="tab"
+          :aria-selected="file.id === activeFileId"
+        >
+          {{ file.name }}
+          <span @click.stop="closeFile(file.id)" class="close-tab" aria-label="Close tab">&times;</span>
+        </button>
+      </div>
+      <CodeEditor
+        v-if="activeFile"
+        :content="activeFile.content"
+        @update:content="content => updateFileContent(activeFile.id, content)"
+      />
+    </template>
+    <Mainscreen v-else @newFileClicked="createNewFile" />
   </div>
 </template>
 
 <style>
-  .container {
-    display: flex;
-    flex-direction: column; 
-    height: 100vh; 
-    width: 100vw;
-  }
+.container {
+  display: flex;
+  flex-direction: column; 
+  height: 100vh; 
+  width: 100vw;
+}
 
-  .CodeEditor {
-    flex-grow: 1; 
-  }
+.tabs {
+  display: flex;
+  background-color: #252526;
+  padding: 5px 5px 0;
+  overflow-x: auto;
+}
+
+.tabs button {
+  background-color: #2D2D2D;
+  border: none;
+  color: #CCCCCC;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 2px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.tabs button.active {
+  background-color: #1E1E1E;
+}
+
+.close-tab {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.close-tab:hover {
+  color: #FF5555;
+}
+
+.CodeEditor {
+  flex-grow: 1; 
+}
 </style>

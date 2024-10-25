@@ -1,24 +1,22 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-import os
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
-# Example file path (adjust as needed)
-FILE_DIRECTORY = '/path/to/save/files/'
+@csrf_exempt
+def compile_code(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        code = data.get('code')
+        # Implement your compilation logic here
+        result = "Compilation result"  # Replace with actual compilation
+        return JsonResponse({'result': result})
 
-@api_view(['POST'])
-def create_file(request):
-    file_name = request.data.get('file_name')
-    
-    if not file_name:
-        return Response({'error': 'File name is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-    file_path = os.path.join(FILE_DIRECTORY, file_name)
-
-    # Create the file
-    try:
-        with open(file_path, 'w') as new_file:
-            new_file.write('')  # Creates an empty file
-        return Response({'message': 'File created successfully!'}, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+@csrf_exempt
+def execute_code(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        code = data.get('code')
+        # Implement your code execution logic here
+        result = "Execution result"  # Replace with actual execution
+        return JsonResponse({'result': result})
