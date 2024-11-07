@@ -1,41 +1,34 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { open, save } from '@tauri-apps/api/dialog';
-import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
 
 const emit = defineEmits(['action']);
 const isFileSaved = ref(true);
 
 const openExistingFile = async () => {
-  try {
-    const selected = await open({
-      multiple: false,
-      filters: [{ name: 'Text Files', extensions: ['txt'] }]
+    const [fileHandle] = await window.showOpenFilePicker({
+      types: [
+        {
+          description: 'Text Files',
+          accept: {
+            'text/plain': ['.txt'],
+          },
+        }
+      ],
     });
-    if (selected && typeof selected === 'string') {
-      const content = await readTextFile(selected);
-      console.log('File opened:', selected);
-      emit('action', 'openFile', { name: selected.split('/').pop(), content });
-    }
-  } catch (error) {
-    console.error('Error opening file:', error);
-  }
+    const file = await fileHandle.getFile();
+    const content = await file.text();
+    // textArea.value = contents;
+    emit('action', 'openFile', { name: file.name, content, handle: fileHandle });
+  
 };
 
-const saveFile = async (content: string) => {
-  try {
-    const savePath = await save({
-      filters: [{ name: 'Text Files', extensions: ['txt'] }]
-    });
-    if (savePath) {
-      await writeTextFile(savePath, content);
-      console.log('File saved:', savePath);
-      isFileSaved.value = true;
-    }
-  } catch (error) {
-    console.error('Error saving file:', error);
-  }
-};
+
+
+// const saveFile = async (content: string) => {
+//   try {
+    
+//   } 
+// };
 
 // ... other functions ...
 
@@ -49,13 +42,31 @@ const saveFile = async (content: string) => {
     <v-btn id="openFile" @click="openExistingFile" icon>
       <v-icon class="icons">mdi-folder-open</v-icon>
     </v-btn>
-    <v-btn id="saveFile" @click="$emit('action', 'saveFile')" icon :disabled="isFileSaved">
+    <v-btn id="saveFile" @click="$emit('action', 'saveFile')" icon="isFileSaved">
       <v-icon class="icons">mdi-content-save</v-icon>
     </v-btn>
-    <!-- ... other buttons ... -->
+    <v-btn id ="undo" >
+      <v-icon class = "icons">mdi-undo</v-icon>
+    </v-btn>
+    <v-btn id ="redo" >
+      <v-icon class = "icons">mdi-redo</v-icon>
+    </v-btn>
+    <v-btn id ="cut" >
+      <v-icon class = "icons">mdi-content-cut</v-icon>
+    </v-btn>
+    <v-btn id ="undo" >
+      <v-icon class = "icons">mdi-content-paste</v-icon>
+    </v-btn>
   </v-toolbar>
 </template>
 
-<style>
+<style scoped>
   /* ... styles ... */
+  .v-toolbar{
+    background-color: #1e1e1e;
+  }
+
+  .icons{
+    color: antiquewhite;
+  }
 </style>

@@ -8,6 +8,7 @@ interface File {
   id: number;
   name: string;
   content: string;
+  handle: FileSystemFileHandle | null;
 }
 
 const showEditor = ref(false);
@@ -20,15 +21,24 @@ const createNewFile = () => {
   const newFile: File = {
     id: Date.now(),
     name: `Untitled-${files.value.length + 1}.txt`,
-    content: ''
+    content: '',
+    handle: null
   };
   files.value.push(newFile);
   activeFileId.value = newFile.id;
   showEditor.value = true;
 };
 
-const openFile = (file: File) => {
-  activeFileId.value = file.id;
+const openFile = (file: { name: string, content: string, handle: FileSystemFileHandle }) => {
+  const newFile: File = {
+    id: Date.now(),
+    name: file.name,
+    content: file.content,
+    handle: file.handle
+  };
+  files.value.push(newFile);
+  activeFileId.value = newFile.id;
+  showEditor.value = true;
 };
 
 const closeFile = (fileId: number) => {
@@ -51,17 +61,42 @@ const updateFileContent = (fileId: number, content: string) => {
   }
 };
 
-const handleToolbarAction = (action: string, payload?: any) => {
+const handleToolbarAction = async (action: string, payload?: any) => {
   switch (action) {
     case 'newFile':
       createNewFile();
+      break;
+    case 'openFile':
+      openFile(payload);
+      break;
+    case 'saveFile':
+      if (activeFile.value) {
+        await saveFile(activeFile.value.content, activeFile.value.handle);
+      }
+      break;
+    case 'fileSaved':
+      if (activeFile.value) {
+        activeFile.value.name = payload.name;
+        activeFile.value.handle = payload.handle;
+      }
       break;
     case 'updateContent':
       if (activeFileId.value !== null) {
         updateFileContent(activeFileId.value, payload);
       }
       break;
-    // Add more cases for other actions as needed
+  }
+};
+
+const saveFile = async (content: string, handle: FileSystemFileHandle | null) => {
+  if (handle) {
+    const writable = await handle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    console.log('File saved:', handle.name);
+  } else {
+    // If no handle, we need to show the save dialog
+    await handleToolbarAction('saveFile', { content });
   }
 };
 </script>
@@ -74,7 +109,7 @@ const handleToolbarAction = (action: string, payload?: any) => {
         <button
           v-for="file in files"
           :key="file.id"
-          @click="openFile(file)"
+          @click="activeFileId = file.id"
           :class="{ active: file.id === activeFileId }"
           role="tab"
           :aria-selected="file.id === activeFileId"
