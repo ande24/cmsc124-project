@@ -20,7 +20,7 @@ const activeFile = computed(() => files.value.find(f => f.id === activeFileId.va
 const createNewFile = () => {
   const newFile: File = {
     id: Date.now(),
-    name: `Untitled-${files.value.length + 1}.txt`,
+    name: `Untitled-${files.value.length + 1}`,
     content: '',
     handle: null
   };
@@ -45,6 +45,7 @@ const closeFile = (fileId: number) => {
   const index = files.value.findIndex(f => f.id === fileId);
   if (index !== -1) {
     files.value.splice(index, 1);
+    alert("Are you sure you want to exit without saving?")
     if (files.value.length === 0) {
       showEditor.value = false;
       activeFileId.value = null;
@@ -61,6 +62,27 @@ const updateFileContent = (fileId: number, content: string) => {
   }
 };
 
+const saveAs = async (content: string, handle: FileSystemFileHandle | null) => {
+
+  const newHandle = await window.showSaveFilePicker({
+      types: [
+        {
+          description: 'Text Files',
+          accept: {
+            'text/plain': ['.txt'],
+          },
+        },
+      ],
+    });
+  
+    const writable = await newHandle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    console.log('File saved as in local directory', newHandle.name);
+    return { handle: newHandle, name: newHandle.name };
+  
+}
+
 const handleToolbarAction = async (action: string, payload?: any) => {
   switch (action) {
     case 'newFile':
@@ -71,13 +93,26 @@ const handleToolbarAction = async (action: string, payload?: any) => {
       break;
     case 'saveFile':
       if (activeFile.value) {
-        await saveFile(activeFile.value.content, activeFile.value.handle);
+        const result = await saveFile(activeFile.value.content, activeFile.value.handle);
+        if(result){
+          activeFile.value.name = result.name;
+          activeFile.value.handle = result.value;
+        }
       }
       break;
     case 'fileSaved':
       if (activeFile.value) {
         activeFile.value.name = payload.name;
         activeFile.value.handle = payload.handle;
+      }
+      break;
+    case 'saveasFile':
+      if (activeFile.value) {
+        const result = await saveAs(activeFile.value.content, activeFile.value.handle);
+        if(result){
+          activeFile.value.name = result.name;
+          activeFile.value.handle = result.value;
+        }
       }
       break;
     case 'updateContent':
@@ -96,7 +131,7 @@ const saveFile = async (content: string, handle: FileSystemFileHandle | null) =>
     console.log('File saved:', handle.name);
   } else {
     // If no handle, we need to show the save dialog
-    await handleToolbarAction('saveFile', { content });
+    return await saveAs(content);
   }
 };
 </script>

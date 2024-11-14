@@ -25,10 +25,35 @@ const openExistingFile = async () => {
 
 
 // const saveFile = async (content: string) => {
-//   try {
-    
-//   } 
+//   const filehandle  = await window.showSaveFilePicker({
+//     types: [
+//       {
+//         description: 'Text Files',
+//         accept: {
+//           'text/plain': ['.txt'],
+//         },
+
+//       },
+//     ],
+//   });
+//   // return handle;
+//   // const writable = await filehandle.createWritable();
+//   // await writable.write(content);
+//   // await writable.close();
+//   // isFileSaved.value = true;
+//   emit('action','fileSaved', {name: filehandle.name, handle: filehandle})
 // };
+
+
+const saveasFile = async () => {
+  emit('action', 'saveasFile');
+};
+
+// const handleSaveFile = async() => {
+//   emit('action', 'saveFile');
+// };
+
+
 
 // ... other functions ...
 
@@ -44,6 +69,9 @@ const openExistingFile = async () => {
     </v-btn>
     <v-btn id="saveFile" @click="$emit('action', 'saveFile')" icon="isFileSaved">
       <v-icon class="icons">mdi-content-save</v-icon>
+    </v-btn>
+    <v-btn id="saveasFile" @click="saveasFile" icon>
+      <v-icon class="icons">mdi-content-save-settings </v-icon>
     </v-btn>
     <v-btn id ="undo" >
       <v-icon class = "icons">mdi-undo</v-icon>
