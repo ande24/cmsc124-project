@@ -1,0 +1,12 @@
+input() = summon()
+print() = proclaim()
+int = mana
+string = verse
+boolean = belief
+character = glyph
+if = 
+else if =
+else = 
+
+userInput = summon("talent(10)")
+
