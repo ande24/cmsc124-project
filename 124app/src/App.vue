@@ -43,14 +43,23 @@ const openFile = (file: { name: string, content: string, handle: FileSystemFileH
 
 const closeFile = (fileId: number) => {
   const index = files.value.findIndex(f => f.id === fileId);
+  let flag = 0;
   if (index !== -1) {
-    files.value.splice(index, 1);
-    alert("Are you sure you want to exit without saving?")
+    
+    if(confirm("Are you sure you want to exit without saving?")){
+      flag = 1;
+      files.value.splice(index, 1);
+    }
+    else{
+      alert("Cancelled");
+    }
     if (files.value.length === 0) {
       showEditor.value = false;
       activeFileId.value = null;
-    } else {
-      activeFileId.value = files.value[Math.min(index, files.value.length - 1)].id;
+    } else{
+      if(flag === 1){
+        activeFileId.value = files.value[Math.min(index, files.value.length - 1)].id;
+      }
     }
   }
 };
