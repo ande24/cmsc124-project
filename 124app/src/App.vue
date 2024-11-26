@@ -90,7 +90,20 @@ const saveAs = async (content: string, handle: FileSystemFileHandle | null) => {
     console.log('File saved as in local directory', newHandle.name);
     return { handle: newHandle, name: newHandle.name };
   
-}
+};  
+
+const saveFile = async (content: string, handle: FileSystemFileHandle | null) => {
+  if (handle) {
+    const writable = await handle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    console.log('File saved:', handle.name);
+    // return null;
+  } else {
+    // If no handle, we need to show the save dialog
+    return await saveAs(content);
+  }
+};
 
 const handleToolbarAction = async (action: string, payload?: any) => {
   switch (action) {
@@ -105,7 +118,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
         const result = await saveFile(activeFile.value.content, activeFile.value.handle);
         if(result){
           activeFile.value.name = result.name;
-          activeFile.value.handle = result.value;
+          activeFile.value.handle = result.handle;
         }
       }
       break;
@@ -132,17 +145,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
   }
 };
 
-const saveFile = async (content: string, handle: FileSystemFileHandle | null) => {
-  if (handle) {
-    const writable = await handle.createWritable();
-    await writable.write(content);
-    await writable.close();
-    console.log('File saved:', handle.name);
-  } else {
-    // If no handle, we need to show the save dialog
-    return await saveAs(content);
-  }
-};
+
 </script>
 
 <template>
