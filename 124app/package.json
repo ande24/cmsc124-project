@@ -13,12 +13,12 @@
     "@guolao/vue-monaco-editor": "^1.5.4",
     "@mdi/font": "^7.4.47",
     "@tauri-apps/api": "^1",
-    "tauri": "^0.9.1",
+    "vite": "^x.x.x",
     "vue": "^3.3.4",
     "vuetify": "^3.7.2"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^1.6.3",
     "@vitejs/plugin-vue": "^5.0.5",
     "vite": "^5.3.1"
   }
