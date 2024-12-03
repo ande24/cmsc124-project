@@ -24,27 +24,6 @@ const openExistingFile = async () => {
 
 
 
-// const saveFile = async (content: string) => {
-//   const filehandle  = await window.showSaveFilePicker({
-//     types: [
-//       {
-//         description: 'Text Files',
-//         accept: {
-//           'text/plain': ['.txt'],
-//         },
-
-//       },
-//     ],
-//   });
-//   // return handle;
-//   // const writable = await filehandle.createWritable();
-//   // await writable.write(content);
-//   // await writable.close();
-//   // isFileSaved.value = true;
-//   emit('action','fileSaved', {name: filehandle.name, handle: filehandle})
-// };
-
-
 const saveasFile = async () => {
   emit('action', 'saveasFile');
 };
