@@ -43,6 +43,8 @@ class Parser:
             return self.parse_input_statement()
         elif token.type == 'OUTPUT':
             return self.parse_output_statement()
+        elif token.type == 'VARIABLE_NAME':
+            return self.parse_variable_statement()
         else:
             raise SyntaxError(f"Unexpected token: {token}")
         
@@ -160,15 +162,51 @@ class Parser:
         # Semicolon
         self.consume('SEMI_COLON')
 
-
         self.symbol_table[var_name.value]['value'] = value
         
         return {
             'type': 'variable_declaration',
             'data_type': data_type.value,
             'variable': var_name.value,
-            'value': value
+            'value': value,
+            'expression': expression
         }
+    
+    def parse_variable_statement(self):
+        """
+        Parse a variable statement, which includes assignments:
+        variable_name = expression;
+        """
+        # Consume the variable name
+        var_name = self.consume('VARIABLE_NAME').value
+        
+        # Check if the variable is declared
+        if var_name not in self.symbol_table:
+            raise SyntaxError(f"Variable '{var_name}' not declared")
+        
+        # Consume the assignment operator
+        self.consume('OPERATOR') 
+        
+        # Parse the expression after '='
+        expression = self.parse_expression()
+        
+        # Evaluate the expression to get the assigned value
+        value = self.evaluate_expression(expression)
+        
+        # Update the symbol table with the new value
+        self.symbol_table[var_name]['value'] = value
+        
+        # Consume the semicolon
+        self.consume('SEMI_COLON')
+        
+        # Return the parsed assignment statement as an AST node
+        return {
+            'type': 'variable_assignment',
+            'variable': var_name,
+            'value': value,
+            'expression': expression
+        }
+    
     
     def parse_expression(self):
         """
@@ -276,9 +314,13 @@ class Parser:
     
 def main():
     input_code = """
-    int x = 5;
-    int y = x + 2 * (3 - 1);
-    cout << 'the value of y: ' << y;
+    int x;
+    cout << "Give me a number: ";
+    cin >> x;
+    int y;
+    x = 1 + 2;
+    y = x + 4;
+    cout << y;
     """
     
     # Tokenize
