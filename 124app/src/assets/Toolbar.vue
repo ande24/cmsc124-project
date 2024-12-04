@@ -1,28 +1,27 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import axios from 'axios';
 
 const emit = defineEmits(['action']);
 const isFileSaved = ref(true);
+const output = ref(null);
+const error = ref(null);
 
 const openExistingFile = async () => {
-    const [fileHandle] = await window.showOpenFilePicker({
-      types: [
-        {
-          description: 'Text Files',
-          accept: {
-            'text/plain': ['.txt'],
-          },
-        }
-      ],
-    });
-    const file = await fileHandle.getFile();
-    const content = await file.text();
-    // textArea.value = contents;
-    emit('action', 'openFile', { name: file.name, content, handle: fileHandle });
-  
+  const [fileHandle] = await window.showOpenFilePicker({
+    types: [
+      {
+        description: 'Text Files',
+        accept: {
+          'text/plain': ['.txt'],
+        },
+      }
+    ],
+  });
+  const file = await fileHandle.getFile();
+  const content = await file.text();
+  emit('action', 'openFile', { name: file.name, content, handle: fileHandle });
 };
-
-
 
 const saveasFile = async () => {
   emit('action', 'saveasFile');
@@ -45,18 +44,46 @@ const copyContent = async () => {
   }
 };
 
+// const pasteContent = async () => {
+//   try {
+//     const text = await navigator.clipboard.readText();
+//     console.log("pasted")
+//     // document.getElementById("textInput").value = text; // Paste into input
+//   } catch (err) {
+//     console.error("Error reading clipboard:", err);
+//   }
+// };
+
 const pasteContent = async () => {
-  navigator.clipboard.readText()
-    .then((text) => {
-      document.getElementById("textInput").value = text; // Paste into input
-    })
-    .catch((err) => console.error("Error reading clipboard:", err));
-  
+  try {
+    const text = await navigator.clipboard.readText();
+    const activeElement = document.activeElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      const caretPosition = activeElement.selectionStart; // Get current caret position
+
+      // Insert text at the caret position
+      const currentText = activeElement.value;
+      activeElement.value = currentText.slice(0, caretPosition) + text + currentText.slice(caretPosition);
+
+      // Move caret to the end of the inserted text
+      // activeElement.setSelectionRange(caretPosition + text.length, caretPosition + text.length);
+    }
+  } catch (err) {
+    console.error("Error reading clipboard:", err);
+  }
 };
 
 
 
-
+const runPythonScript = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/compile-File/');
+    output.value = response.data.output;
+    error.value = response.data.error;
+  } catch (err) {
+    error.value = err.message;
+  }
+};
 </script>
 
 <template>
@@ -88,12 +115,19 @@ const pasteContent = async () => {
     <v-btn id = "copy" @click = "copyContent" icon>
       <v-icon class = "icons">mdi-content-copy</v-icon>
     </v-btn>
+    <v-spacer></v-spacer>
+    <div id="play" style="padding-right: 50px;">
+      <v-btn id= "compile" @click="runPythonScript" icon>
+        <v-icon class = "icons">mdi-play-box-edit-outline</v-icon>
+      </v-btn>
+      <div v-if="output" style="color: white;">Output: {{ output }}</div>
+      <div v-if="error" style="color: red;">Error: {{ error }}</div>
+    </div>
   </v-toolbar>
 </template>
 
 <style scoped>
-  /* ... styles ... */
-  .v-toolbar{
+  .v-toolbar {
     background-color: #1e1e1e;
     width: 100%;
     padding-right: 16px;
@@ -132,7 +166,8 @@ const pasteContent = async () => {
   </style>
   
 
-  .icons{
+  .icons {
     color: antiquewhite;
   }
+
 </style>

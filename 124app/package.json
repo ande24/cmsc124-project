@@ -13,6 +13,7 @@
     "@guolao/vue-monaco-editor": "^1.5.4",
     "@mdi/font": "^7.4.47",
     "@tauri-apps/api": "^1",
+    "axios": "^1.7.9",
     "vite": "^x.x.x",
     "vue": "^3.3.4",
     "vuetify": "^3.7.2"
