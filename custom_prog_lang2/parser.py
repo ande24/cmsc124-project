@@ -5,7 +5,7 @@ class Parser:
         self.tokens = tokens
         self.current = 0
         self.symbol_table = {}
-    
+        
     def peek(self):
         if self.current < len(self.tokens):
             return self.tokens[self.current]
@@ -45,6 +45,8 @@ class Parser:
             return self.parse_input_statement()
         elif token.type == 'OUTPUT':
             return self.parse_output_statement()
+        elif token.type == 'IF_STATEMENT':
+            return self.parse_if_statement()
         elif token.type == 'VARIABLE_NAME':
             return self.parse_variable_assignment()
         else:
@@ -240,6 +242,50 @@ class Parser:
             'value': value
         }
     
+    def parse_if_statement(self):
+        """Parse an if statement of the form:
+        trial (condition) { statements }
+        Optionally followed by a failure block:
+        failure { statements }
+        """
+        self.consume('IF_STATEMENT')  # Consume 'trial' (if)
+
+        # Consume opening parenthesis
+        self.consume('PUNCTUATION')
+
+        # Parse the condition expression (inside parentheses)
+        condition = self.parse_expression()
+
+        # Consume closing parenthesis
+        self.consume('PUNCTUATION')
+
+        # Parse the 'if' block (statements inside { })
+        if_block = self.parse_block()
+
+        # Check if there's a failure block
+        failure_block = None
+        if self.peek() and self.peek().type == 'ELSE_STATEMENT':
+            self.consume('ELSE_STATEMENT')  # Consume 'failure'
+            failure_block = self.parse_block()  # Parse the failure block
+
+        return {
+            'type': 'if_statement',
+            'condition': condition,
+            'if_block': if_block,
+            'failure_block': failure_block
+        }
+    
+    def parse_block(self):
+        """Parse a block of statements enclosed in braces {}"""
+        self.consume('START_IF_FOR')  # Consume '{'
+
+        statements = []
+        while self.peek() and self.peek().type != 'END_IF_FOR':
+            statements.append(self.parse_statement())
+
+        self.consume('END_IF_FOR')  # Consume '}'
+        return statements
+    
     def parse_expression(self):
         """
         Parse arithmetic expressions with basic precedence
@@ -250,7 +296,39 @@ class Parser:
         - Basic arithmetic operations (+, -, *, /)
         - Compound assignment operations (+=, -=, *=, /=)
         """
-        return self.parse_additive_expression()
+        return self.parse_logical_expression()
+    
+    def parse_logical_expression(self):
+        """Handle logical AND and OR (&&, ||)"""
+        left = self.parse_relational_expression()
+
+        while self.peek() and self.peek().type == 'OPERATOR' and self.peek().value in ['and', 'or']:
+            operator = self.consume('OPERATOR')
+            right = self.parse_relational_expression()
+            left = {
+                'type': 'logical_operation',
+                'operator': operator.value,
+                'left': left,
+                'right': right
+            }
+        
+        return left
+    
+    def parse_relational_expression(self):
+        """Handle relational operations like <, >, <=, >=, ==, !="""
+        left = self.parse_additive_expression()
+
+        while self.peek() and self.peek().type == 'OPERATOR' and self.peek().value in ['is inferior to', 'is superior to', 'is inferior or equal to', 'is superior or equal to', 'is equal to', 'is unequal to']:
+            operator = self.consume('OPERATOR')
+            right = self.parse_additive_expression()
+            left = {
+                'type': 'binary_operation',
+                'operator': operator.value,
+                'left': left,
+                'right': right
+            }
+
+        return left
     
     def parse_additive_expression(self):
         """
@@ -381,14 +459,43 @@ class Parser:
                 if right_val == 0:
                     raise ZeroDivisionError("Division by zero")
                 return left_val / right_val
+            
+            # Handling relational operators
+            if operator == 'is inferior to':
+                return left_val < right_val
+            elif operator == 'is superior to':
+                return left_val > right_val
+            elif operator == 'is inferior or equal to':
+                return left_val <= right_val
+            elif operator == 'is superior or equal to':
+                return left_val >= right_val
+            elif operator == 'is equal to':
+                return left_val == right_val
+            elif operator == 'is unequal to':
+                return left_val != right_val
+            
+        elif node['type'] == 'logical_operation':
+            left_val = self.evaluate_expression(node['left'])
+            right_val = self.evaluate_expression(node['right'])
+            operator = node['operator']
+            
+            # Handling logical operators
+            if operator == 'and':
+                return left_val and right_val
+            elif operator == 'or':
+                return left_val or right_val
         raise ValueError(f"Unknown node type: {node['type']}") 
     
 def main():
     input_code = """
-    tally a imbue with 1 augmented by 1;
-    cast spell a;
-    a augment by 5; //comment
-    cast spell a;
+    tally a imbue with 5;
+    tally b imbue with 6;
+    trial (a is inferior to b) {
+        cast spell "victory";
+    }
+    failure {
+        cast spell "defeat";
+    }
     """
     
     # Tokenize
@@ -407,4 +514,5 @@ def main():
     # print(json.dumps(parser.symbol_table, indent=2)) 
 
 if __name__ == "__main__":
+
     main()

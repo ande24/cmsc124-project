@@ -9,11 +9,12 @@ TOKEN_SPECIFICATION = [
     ('NUMBER',          r'\d+(\.\d*)?'),  # Integer or decimal number
     ('CHAR',            r'(?:"[^"]")|(?:\'[^\']\')'),
     ('STRING',          r'(?:"[^"]*")|(?:\'[^\']*\')'),
-    ('OPERATOR',        r'(imbue with|augmented by|diminished by|amplified by|fragmented by|augment by|diminish by|amplify by|fragment by)'), 
-    ('VARIABLE_NAME',   r'[A-Za-z_]\w*'),  # Identifiers (variable names)
+    ('OPERATOR',        r'(imbue with|augmented by|diminished by|amplified by|fragmented by|augment by|diminish by|amplify by|fragment by|and|or|is inferior to|is superior to|is inferior or equal to|is superior or equal to|is equal to|is unequal to)'), 
     ('PUNCTUATION',     r'[,\(\)]'),       # Punctuation
     ('IF_STATEMENT',    r'\b(?:trial)\b'),
+    ('ELSE_STATEMENT',  r'\b(?:failure)\b'),
     ('FOR_STATEMENT',   r'\b(?:cycle)\b'),
+    ('VARIABLE_NAME',   r'[A-Za-z_]\w*'),  # Identifiers (variable names)
     ('SEMI_COLON',      r';'),
     ('START_IF_FOR',    r'{'), 
     ('END_IF_FOR',      r'}'), 
