@@ -6,14 +6,15 @@ TOKEN_SPECIFICATION = [
     ('INPUT',           r'(?:summon)'),
     ('OUTPUT',          r'cast'),
     ('OUTPUT_CASE',     r'spell'),
+    ('IF_STATEMENT',    r'\b(?:trial)\b'),
+    ('ELSE_STATEMENT',  r'\b(?:failure)\b'),
+    ('FOR_STATEMENT',   r'\b(?:cycle)\b'),
     ('NUMBER',          r'\d+(\.\d*)?'),  # Integer or decimal number
     ('STRING',          r'(?:"[^"]*")|(?:\'[^\']*\')'),
     ('CHAR',            r'(?:"[^"]")|(?:\'[^\']\')'),
-    ('OPERATOR',        r'(imbue with|augmented by|diminished by|amplified by|fragmented by|augment by|diminish by|amplify by|fragment by)'), 
+    ('OPERATOR',        r'(imbue with|augmented by|diminished by|amplified by|fragmented by|augment by|diminish by|amplify by|fragment by|and|or|is inferior to|is superior to|is inferior or equal to|is superior or equal to|is equal to|is unequal to)'),
     ('VARIABLE_NAME',   r'[A-Za-z_]\w*'),  # Identifiers (variable names)
     ('PUNCTUATION',     r'[,\(\)]'),       # Punctuation
-    ('IF_STATEMENT',    r'\b(?:trial)\b'),
-    ('FOR_STATEMENT',   r'\b(?:cycle)\b'),
     ('SEMI_COLON',      r';'),
     ('START_IF_FOR',    r'{'), 
     ('END_IF_FOR',      r'}'), 
@@ -63,7 +64,14 @@ def lexical_analyzer(text):
 # Example usage
 if __name__ == "__main__":
     input_code = """
-    rune x imbue with '1';
+    tally a imbue with 5;
+    tally b imbue with 6;
+    trial (a is inferior to b) {
+        cast spell "victory";
+    }
+    failure {
+        cast spell "defeat";
+    }
     """
     
     tokens = lexical_analyzer(input_code)
