@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import compileFile
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include ('my_api.urls'))
+    # path('admin/', admin.site.urls),
+    path('api/compile-File/', compileFile, name='compileFile'),
+    # path('api/', include ('my_api.urls'))
 ]

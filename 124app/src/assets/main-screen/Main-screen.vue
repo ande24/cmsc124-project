@@ -3,78 +3,18 @@
     <Navbar />
     <v-card>
       <v-layout>
-        <v-navigation-drawer
-          v-model="drawer"
-          :rail="true"
-          app
-          permanent
-          height="100%"
-          class="sidebar-class"
-        >
-          <v-list density="compact" nav>
-            <v-list-item
-              prepend-icon="mdi-file-multiple"
-              title="explorer-main"
-              @click.stop="toggleRail('explorer')"
-              style="color: white;"
-            ></v-list-item>
-            <v-list-item
-              prepend-icon="mdi-magnify"
-              title="search-main"
-              @click.stop="toggleRail('search')"
-              style="color: white;"
-            ></v-list-item>
-            <v-list-item
-              prepend-icon="mdi-creation-outline"
-              title="run-debug-main"
-              @click.stop="toggleRail('run-debug')"
-              style="color: white;"
-            ></v-list-item>
-          </v-list>
-        </v-navigation-drawer>
+      
         <v-main style="height: 100vh; background-color: #343434;">
           <!-- Content for each rail -->
-          <div v-if="activeRail === 'explorer'">
-            <v-navigation-drawer :width="190" style="background-color: #202020; color: white;">
-              <v-list-item title="EXPLORER" ></v-list-item>
-              <v-divider></v-divider>
-              <v-list-item link title="List Item 1"></v-list-item>
-              <v-list-item link title="List Item 2"></v-list-item>
-              <v-list-item link title="List Item 3"></v-list-item>
-            </v-navigation-drawer>
-          </div>
-          <div v-if="activeRail === 'search'">
-            <v-navigation-drawer :width="190" style="background-color: #202020; color: white">
-              <v-list-item title="SEARCH"></v-list-item>
-              <v-divider></v-divider>
-              <v-list-item link title="List Item 1"></v-list-item>
-              <v-list-item link title="List Item 2"></v-list-item>
-              <v-list-item link title="List Item 3"></v-list-item>
-            </v-navigation-drawer>
-          </div>
-          <div v-if="activeRail === 'run-debug'">
-            <v-navigation-drawer :width="190" style="background-color: #202020; color: white">
-              <v-list-item title="RUN and DEBUG"></v-list-item>
-              <v-divider></v-divider>
-              <v-list-item link title="List Item 1"></v-list-item>
-              <v-list-item link title="List Item 2"></v-list-item>
-              <v-list-item link title="List Item 3"></v-list-item>
-            </v-navigation-drawer>
-          </div>
+          
           <div class="ide-name">
-            <h1>AY DEE E</h1>
+            <h1>PormaCode</h1>
           </div>
           <div class="new-file" @click="newFileClicked">
             <button style="border: 4px solid white; border-radius: 40px;background-color: #02123c; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;"> New File </button>
           </div>
-          <h2>Open existing file:</h2>
-          <div class="existing-file">
-          <v-btn class="existing-file-button">
-          </v-btn>
-          <v-btn class="existing-file-button">
-          </v-btn>
-          <v-btn class="existing-file-button">
-          </v-btn>
+          <div class = "open-existing-file" @click ="openExistingFile" >
+            <button style="border: 4px solid white; border-radius: 40px;background-color: #02123c; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;"> Open File </button>
           </div>
         </v-main>
       </v-layout>
@@ -107,6 +47,11 @@ export default {
     newFileClicked() {
       console.log("new file clicked");
       this.$emit('newFileClicked');
+    },
+
+    openExistingFile(){
+      console.log("open existing file clicked");
+      this.$emit('openFile');
     }
   },
 };
@@ -124,7 +69,7 @@ h2 {
 .ide-name {
   display: flex;
   justify-content: center;
-  padding-top: 60px;
+  padding-top: 200px;
   font-size: 50px;
   color: white;
 }
@@ -134,17 +79,11 @@ h2 {
   padding-top: 40px;
   font-size: 20px;
 }
-.existing-file {
+
+.open-existing-file {
   display: flex;
-  margin-top: 30px;
-  margin-left: 200px;
-  margin-right: 200px;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  justify-content: space-around;
-  background-color: #02123c;
-}
-.existing-file-button {
-  padding: 125px;
+  justify-content: center;
+  padding-top: 40px;
+  font-size: 20px;
 }
 </style>

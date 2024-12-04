@@ -172,6 +172,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
       />
     </template>
     <Mainscreen v-else @newFileClicked="createNewFile" />
+    <!-- <Mainscreen v-else @openFile = "openFile"/> -->
   </div>
 </template>
 
