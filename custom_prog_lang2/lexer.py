@@ -7,8 +7,8 @@ TOKEN_SPECIFICATION = [
     ('OUTPUT',          r'cast'),
     ('OUTPUT_CASE',     r'spell'),
     ('NUMBER',          r'\d+(\.\d*)?'),  # Integer or decimal number
-    ('CHAR',            r'(?:"[^"]")|(?:\'[^\']\')'),
     ('STRING',          r'(?:"[^"]*")|(?:\'[^\']*\')'),
+    ('CHAR',            r'(?:"[^"]")|(?:\'[^\']\')'),
     ('OPERATOR',        r'(imbue with|augmented by|diminished by|amplified by|fragmented by|augment by|diminish by|amplify by|fragment by)'), 
     ('VARIABLE_NAME',   r'[A-Za-z_]\w*'),  # Identifiers (variable names)
     ('PUNCTUATION',     r'[,\(\)]'),       # Punctuation
@@ -63,12 +63,7 @@ def lexical_analyzer(text):
 # Example usage
 if __name__ == "__main__":
     input_code = """
-    tally x = 4;
-    tally y = x + 2 * (3 - 1);
-    verse f = 1.1;
-    portion s = "sdfe"
-    rune c = 's';
-    cout << y;
+    rune x imbue with '1';
     """
     
     tokens = lexical_analyzer(input_code)

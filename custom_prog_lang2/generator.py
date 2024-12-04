@@ -2,11 +2,13 @@ import lexer
 import parser
 
 class Generator:
-    def __init__(self):
+    def __init__(self, symbol_table):
+        self.symbol_table = symbol_table
         self.mips_code = []
         self.data_segment = [".data"]
         self.text_segment = [".text", ".globl main", "main:"]
         self.temp_register_counter = 0
+        self.buffer = 0
 
     def generate_mips(self, ast):
         """
@@ -32,65 +34,112 @@ class Generator:
         reg = f"$t{self.temp_register_counter}"
         self.temp_register_counter = (self.temp_register_counter + 1) % 10
         return reg
+    
+    def get_buffer(self, variable):
+        return f"{variable}_buffer"
 
     def handle_variable_declaration(self, node):
+        variable = node['variable']
         if node.get('value') is None:
-            self.data_segment.append(f"{node['variable']}: .word 0")
+            if self.symbol_table[variable]['data_type'] == "tally":
+                self.data_segment.append(f"{variable}: .word 0")
+            # elif self.symbol_table[variable]['data_type'] == "verse":
+            #     buffer_label = self.get_buffer(variable)
+                # if f"{buffer_label}: .space" not in self.data_segment:
+                #     self.data_segment.append(f"{buffer_label}: .space 100")
         else:
-            # if node['expression']['type'] == 'binary_operation':
-
-            # else:
-            self.data_segment.append(f"{node['variable']}: .word {node['value']}")
+            if self.symbol_table[variable]['data_type'] == "tally":
+                self.data_segment.append(f"{variable}: .word {node['value']}")
+            elif self.symbol_table[variable]['data_type'] == "verse":
+                buffer_label = self.get_buffer(variable)
+                if f"{buffer_label}: .space" not in self.data_segment:
+                    self.data_segment.append(f"{buffer_label}: .space 100")
 
     def handle_variable_assignment(self, node):
         variable = node['variable']
         expression = node['expression']
-        temp_reg = self.get_temp_register()
+        var_info = self.symbol_table[variable]
 
+        if var_info['data_type'] == "verse":
+            buffer_label = self.get_buffer(variable)
+            if expression['type'] == 'string':
+                # Store string directly in the buffer
+                temp_label = f"str_{len(self.data_segment)}"
+                self.data_segment.append(f"{temp_label}: .asciiz {expression['value']}")
+                self.text_segment.append(f"la $t0, {temp_label}")
+                self.text_segment.append(f"la $t1, {buffer_label}")
+                self.text_segment.append(f"li $t2, 100")  # Assuming a max size of 100 bytes
+                self.text_segment.append(f"loop_copy:")
+                self.text_segment.append(f"lb $t3, 0($t0)")
+                self.text_segment.append(f"sb $t3, 0($t1)")
+                self.text_segment.append(f"beqz $t3, end_copy")
+                self.text_segment.append(f"addi $t0, $t0, 1")
+                self.text_segment.append(f"addi $t1, $t1, 1")
+                self.text_segment.append(f"subi $t2, $t2, 1")
+                self.text_segment.append(f"bnez $t2, loop_copy")
+                self.text_segment.append(f"end_copy:")
+            elif expression['type'] == 'variable':
+                # Copy from one string buffer to another
+                source_buffer = self.get_buffer(expression['name'])
+                self.text_segment.append(f"la $t0, {source_buffer}")
+                self.text_segment.append(f"la $t1, {buffer_label}")
+                self.text_segment.append(f"li $t2, 100")  # Assuming a max size of 100 bytes
+                self.text_segment.append(f"loop_copy_var:")
+                self.text_segment.append(f"lb $t3, 0($t0)")
+                self.text_segment.append(f"sb $t3, 0($t1)")
+                self.text_segment.append(f"beqz $t3, end_copy_var")
+                self.text_segment.append(f"addi $t0, $t0, 1")
+                self.text_segment.append(f"addi $t1, $t1, 1")
+                self.text_segment.append(f"subi $t2, $t2, 1")
+                self.text_segment.append(f"bnez $t2, loop_copy_var")
+                self.text_segment.append(f"end_copy_var:")
+        else:
+            # Original logic for tally (integer) assignments
+            temp_reg = self.get_temp_register()
+            self.evaluate_expression(expression, temp_reg)
+            self.text_segment.append(f"sw {temp_reg}, {variable}")
+
+    def evaluate_expression(self, expression, target_reg):
         if expression['type'] == 'number':
-            self.text_segment.append(f"li {temp_reg} {expression['value']}")
+            self.text_segment.append(f"li {target_reg}, {expression['value']}")
         elif expression['type'] == 'variable':
-            self.text_segment.append(f"lw {temp_reg}, {expression['name']}")
+            self.text_segment.append(f"lw {target_reg}, {expression['name']}")
         elif expression['type'] == 'binary_operation':
-            self.handle_binary_operation(expression, {temp_reg})
-        
-        self.text_segment.append(f"sw {temp_reg}, {variable}")
+            left_reg = self.get_temp_register()
+            right_reg = self.get_temp_register()
 
-    def handle_binary_operation(self, node, target_register):
-        left = node['left']
-        right = node['right']
-        operator = node['operator']
-        allocate_reg_left = self.get_temp_register()
-        allocate_reg_right = self.get_temp_register()
+            # Evaluate left and right operands
+            self.evaluate_expression(expression['left'], left_reg)
+            self.evaluate_expression(expression['right'], right_reg)
 
-        # Load left operand
-        if left['type'] == 'number':
-            self.text_segment.append(f"li {allocate_reg_left}, {left['value']}")
-        elif left['type'] == 'variable':
-            self.text_segment.append(f"lw {allocate_reg_left}, {left['name']}")
-
-        # Load right operand
-        if right['type'] == 'number':
-            self.text_segment.append(f"li {allocate_reg_right}, {right['value']}")
-        elif right['type'] == 'variable':
-            self.text_segment.append(f"lw {allocate_reg_right}, {right['name']}")
-
-        # Perform operation
-        if operator == '+':
-            self.text_segment.append(f"add {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '-':
-            self.text_segment.append(f"sub {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '*':
-            self.text_segment.append(f"mul {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '/':
-            self.text_segment.append(f"div {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-            self.text_segment.append(f"mflo {list(target_register)[0]}")
+            # Perform the binary operation
+            operator = expression['operator']
+            if operator == 'augmented by':
+                self.text_segment.append(f"add {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'diminished by':
+                self.text_segment.append(f"sub {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'amplified by':
+                self.text_segment.append(f"mul {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'fragmented by':
+                self.text_segment.append(f"div {left_reg}, {right_reg}")
+                self.text_segment.append(f"mflo {target_reg}")
 
     def handle_input_statement(self ,node):
         variable = node['variable']
-        self.text_segment.append(f"li $v0, 5")  # Read integer
-        self.text_segment.append(f"syscall")
-        self.text_segment.append(f"sw $v0, {variable}")
+        var_info = self.symbol_table[variable]
+        if var_info['data_type'] == "tally":
+            self.text_segment.append(f"li $v0, 5")  # Read integer
+            self.text_segment.append(f"syscall")
+            self.text_segment.append(f"sw $v0, {variable}")
+        elif var_info['data_type'] == "verse":
+            buffer_label = self.get_buffer(variable)
+            if f"{buffer_label}" not in self.data_segment:
+                self.data_segment.append(f"{buffer_label}: .space 100") 
+            
+            self.text_segment.append(f"li $v0, 8")
+            self.text_segment.append(f"la $a0, {buffer_label}")
+            self.text_segment.append(f"li $a1, 100")
+            self.text_segment.append(f"syscall")
 
     def handle_output_statement(self, node):
         for expr in node['expressions']:
@@ -100,8 +149,13 @@ class Generator:
                 self.text_segment.append(f"la $a0, {label}")
                 self.text_segment.append(f"li $v0, 4")  # Print string
             elif expr['type'] == 'variable':
-                self.text_segment.append(f"lw $a0, {expr['name']}")
-                self.text_segment.append(f"li $v0, 1")  # Print integer
+                if self.symbol_table[expr['name']]['data_type'] == "verse":
+                    buffer_label = self.get_buffer(expr['name'])
+                    self.text_segment.append(f"la $a0, {buffer_label}")
+                    self.text_segment.append(f"li $v0, 4")
+                else:
+                    self.text_segment.append(f"lw $a0, {expr['name']}")
+                    self.text_segment.append(f"li $v0, 1")  # Print integer
             self.text_segment.append(f"syscall")
 
     # def handle_comment(self, node):
@@ -121,20 +175,31 @@ class Generator:
         return "\n".join(self.mips_code)
 
 def main():
+    # input_code = """
+    # int x;
+    # cout << "Give me a number: ";
+    # cin >> x;
+    # int y;
+    # y = x + 4;
+    # cout << y;
+    # """
     input_code = """
-    int x;
-    cout << "Give me a number: ";
-    cin >> x;
-    int y;
-    y = x + 4;
-    cout << y;
+    verse x;
+    verse y;
+    cast spell "Enter value for x: ";
+    summon x;
+    cast spell "Enter value for y: ";
+    summon y;
+    cast spell x;
+    cast spell y;
     """
 
     tokens = lexer.lexical_analyzer(input_code)
     parse_to_mips = parser.Parser(tokens)
     ast = parse_to_mips.parse()
+    symbol_table = parse_to_mips.get_symbol_table()
 
-    generator = Generator()
+    generator = Generator(symbol_table)
     mips_code = generator.generate_mips(ast)
 
     # output_file = "output.asm"

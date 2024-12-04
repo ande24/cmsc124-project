@@ -46,7 +46,7 @@ class Parser:
         elif token.type == 'OUTPUT':
             return self.parse_output_statement()
         elif token.type == 'VARIABLE_NAME':
-            return self.parse_variable_assignment()
+            return self.parse_variable_statement()
         else:
             raise SyntaxError(f"Unexpected token: {token}")
         
@@ -163,7 +163,8 @@ class Parser:
 
         if data_type.value == 'rune':
             if not isinstance(value, str) or len(value) != 1:
-                raise SyntaxError(f"Expected a single character for '{var_name.value}', got {value}")
+                # raise SyntaxError(f"Expected a single character for '{var_name.value}', got {value}")
+                print("DATA TYPEEEE:", data_type, "LENGTHH:", len(value))
         
         # Semicolon
         self.consume('SEMI_COLON')
@@ -178,66 +179,39 @@ class Parser:
             'expression': expression
         }
     
-    def parse_variable_assignment(self):
+    def parse_variable_statement(self):
         """
-        Parse variable declaration of the form:
+        Parse a variable statement, which includes assignments:
         variable_name = expression;
         """
+        # Consume the variable name
+        var_name = self.consume('VARIABLE_NAME').value
         
-        # Variable name
-        var_name = self.consume('VARIABLE_NAME')
+        # Check if the variable is declared
+        if var_name not in self.symbol_table:
+            raise SyntaxError(f"Variable '{var_name}' not declared")
         
-        if var_name.value not in self.symbol_table:
-            raise SyntaxError(f"Variable {var_name.value} not yet declared")
-
-        if self.peek().type == 'OPERATOR' and self.peek().value in ['augment by', 'diminish by', 'amplify by', 'fragment by']:
-            operator = self.consume('OPERATOR')
-
-            print(self.peek())
-            
-            right_expression = self.parse_expression()
-            right_val = self.evaluate_expression(right_expression)
-            
-            current_val = self.symbol_table[var_name.value]['value']
-            
-            if operator.value == 'augment by':
-                new_val = current_val + right_val
-            elif operator.value == 'diminish by':
-                new_val = current_val - right_val
-            elif operator.value == 'amplify by':
-                new_val = current_val * right_val
-            elif operator.value == 'fragment by':
-                if right_val == 0:
-                    raise ZeroDivisionError("Division by zero")
-                new_val = current_val / right_val
-            else:
-                raise SyntaxError(f"Unsupported operator '{operator.value}' for compound assignment")
-            
-            self.consume('SEMI_COLON')
-            self.symbol_table[var_name.value]['value'] = new_val
-
-            return {
-                'type': 'compound_assignment',
-                'variable': var_name.value,
-                'operator': operator.value,
-                'value': new_val
-            }
-
-        self.consume('OPERATOR')
+        # Consume the assignment operator
+        self.consume('OPERATOR') 
         
-        # Parse expression
+        # Parse the expression after '='
         expression = self.parse_expression()
-        value = self.evaluate_expression(expression) 
-
-        # Semicolon
-        self.consume('SEMI_COLON')
-
-        self.symbol_table[var_name.value]['value'] = value
         
+        # Evaluate the expression to get the assigned value
+        value = self.evaluate_expression(expression)
+        
+        # Update the symbol table with the new value
+        self.symbol_table[var_name]['value'] = value
+        
+        # Consume the semicolon
+        self.consume('SEMI_COLON')
+        
+        # Return the parsed assignment statement as an AST node
         return {
             'type': 'variable_assignment',
-            'variable': var_name.value,
-            'value': value
+            'variable': var_name,
+            'value': value,
+            'expression': expression
         }
     
     def parse_expression(self):
@@ -317,6 +291,7 @@ class Parser:
         - Parenthesized expressions
         """
         token = self.peek()
+        print("TOKENNN:", token, "TOKEN Type:", token.type)
         
         if token.type == 'NUMBER':
             if '.' in token.value:
@@ -382,13 +357,18 @@ class Parser:
                     raise ZeroDivisionError("Division by zero")
                 return left_val / right_val
         raise ValueError(f"Unknown node type: {node['type']}") 
+
+    def get_symbol_table(self):
+        return self.symbol_table
     
 def main():
     input_code = """
-    tally a imbue with 1 augmented by 1;
-    cast spell a;
-    a augment by 5; //comment
-    cast spell a;
+    verse x;
+    verse y;
+    cast spell "Enter value for x: ";
+    cast spell "Enter value for y: ";
+    x imbue with x augmented by y;
+    cast spell x;
     """
     
     # Tokenize
