@@ -44,13 +44,36 @@ const copyContent = async () => {
   }
 };
 
+// const pasteContent = async () => {
+//   try {
+//     const text = await navigator.clipboard.readText();
+//     console.log("pasted")
+//     // document.getElementById("textInput").value = text; // Paste into input
+//   } catch (err) {
+//     console.error("Error reading clipboard:", err);
+//   }
+// };
+
 const pasteContent = async () => {
-  navigator.clipboard.readText()
-    .then((text) => {
-      document.getElementById("textInput").value = text; // Paste into input
-    })
-    .catch((err) => console.error("Error reading clipboard:", err));
+  try {
+    const text = await navigator.clipboard.readText();
+    const activeElement = document.activeElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+      const caretPosition = activeElement.selectionStart; // Get current caret position
+
+      // Insert text at the caret position
+      const currentText = activeElement.value;
+      activeElement.value = currentText.slice(0, caretPosition) + text + currentText.slice(caretPosition);
+
+      // Move caret to the end of the inserted text
+      // activeElement.setSelectionRange(caretPosition + text.length, caretPosition + text.length);
+    }
+  } catch (err) {
+    console.error("Error reading clipboard:", err);
+  }
 };
+
+
 
 const runPythonScript = async () => {
   try {
@@ -93,11 +116,11 @@ const runPythonScript = async () => {
       <v-icon class = "icons">mdi-content-copy</v-icon>
     </v-btn>
     <v-spacer></v-spacer>
-    <div id="play">
+    <div id="play" style="padding-right: 50px;">
       <v-btn id= "compile" @click="runPythonScript" icon>
         <v-icon class = "icons">mdi-play-box-edit-outline</v-icon>
       </v-btn>
-      <div v-if="output" style="color: white;">Output: console.log({{ output }})</div>
+      <div v-if="output" style="color: white;">Output: {{ output }}</div>
       <div v-if="error" style="color: red;">Error: {{ error }}</div>
     </div>
   </v-toolbar>
@@ -112,8 +135,4 @@ const runPythonScript = async () => {
     color: antiquewhite;
   }
 
-  .compile{
-    display: flex;
-    padding-right: 50px;
-  }
 </style>
