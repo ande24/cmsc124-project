@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import axios from 'axios';
+//import axios from 'axios';
 
 const emit = defineEmits(['action']);
 const isFileSaved = ref(true);
@@ -159,12 +159,6 @@ const runPythonScript = async () => {
     height: 24px;
     border-left: 1px solid white;
   }
-
-    .icons {
-        color: white;
-    }
-  </style>
-  
 
   .icons {
     color: antiquewhite;
