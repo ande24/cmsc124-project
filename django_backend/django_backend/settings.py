@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'my_api',
     'rest_framework',
     'corsheaders'
 ]
@@ -72,7 +71,7 @@ TEMPLATES = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8080',  # Vue.js port
+    'http://localhost:1420',  # Vue.js port
 ]
 
 WSGI_APPLICATION = 'django_backend.wsgi.application'
