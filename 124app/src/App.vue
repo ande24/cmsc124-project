@@ -43,14 +43,23 @@ const openFile = (file: { name: string, content: string, handle: FileSystemFileH
 
 const closeFile = (fileId: number) => {
   const index = files.value.findIndex(f => f.id === fileId);
+  let flag = 0;
   if (index !== -1) {
-    files.value.splice(index, 1);
-    alert("Are you sure you want to exit without saving?")
+    
+    if(confirm("Are you sure you want to exit without saving?")){
+      flag = 1;
+      files.value.splice(index, 1);
+    }
+    else{
+      alert("Cancelled");
+    }
     if (files.value.length === 0) {
       showEditor.value = false;
       activeFileId.value = null;
-    } else {
-      activeFileId.value = files.value[Math.min(index, files.value.length - 1)].id;
+    } else{
+      if(flag === 1){
+        activeFileId.value = files.value[Math.min(index, files.value.length - 1)].id;
+      }
     }
   }
 };
@@ -81,7 +90,20 @@ const saveAs = async (content: string, handle: FileSystemFileHandle | null) => {
     console.log('File saved as in local directory', newHandle.name);
     return { handle: newHandle, name: newHandle.name };
   
-}
+};  
+
+const saveFile = async (content: string, handle: FileSystemFileHandle | null) => {
+  if (handle) {
+    const writable = await handle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    console.log('File saved:', handle.name);
+    // return null;
+  } else {
+    // If no handle, we need to show the save dialog
+    return await saveAs(content);
+  }
+};
 
 const handleToolbarAction = async (action: string, payload?: any) => {
   switch (action) {
@@ -96,7 +118,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
         const result = await saveFile(activeFile.value.content, activeFile.value.handle);
         if(result){
           activeFile.value.name = result.name;
-          activeFile.value.handle = result.value;
+          activeFile.value.handle = result.handle;
         }
       }
       break;
@@ -123,17 +145,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
   }
 };
 
-const saveFile = async (content: string, handle: FileSystemFileHandle | null) => {
-  if (handle) {
-    const writable = await handle.createWritable();
-    await writable.write(content);
-    await writable.close();
-    console.log('File saved:', handle.name);
-  } else {
-    // If no handle, we need to show the save dialog
-    return await saveAs(content);
-  }
-};
+
 </script>
 
 <template>
