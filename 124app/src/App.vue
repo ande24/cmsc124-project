@@ -76,9 +76,9 @@ const saveAs = async (content: string, handle: FileSystemFileHandle | null) => {
   const newHandle = await window.showSaveFilePicker({
       types: [
         {
-          description: 'Text Files',
+          description: 'Spell file',
           accept: {
-            'text/plain': ['.txt'],
+            'text/plain': ['.spell'],
           },
         },
       ],
@@ -187,12 +187,13 @@ const handleToolbarAction = async (action: string, payload?: any) => {
 .tabs {
   display: flex;
   background-color: #252526;
-  padding: 5px 5px 0;
+  padding: 5px 5px;
+  padding-top: 40;
   overflow-x: auto;
 }
 
 .tabs button {
-  background-color: #2D2D2D;
+  background-color: #4b0082;
   border: none;
   color: #CCCCCC;
   padding: 8px 16px;
@@ -203,7 +204,7 @@ const handleToolbarAction = async (action: string, payload?: any) => {
 }
 
 .tabs button.active {
-  background-color: #1E1E1E;
+  background-color: #4b0082;
 }
 
 .close-tab {
@@ -217,5 +218,71 @@ const handleToolbarAction = async (action: string, payload?: any) => {
 
 .CodeEditor {
   flex-grow: 1; 
+}
+
+.tabs {
+  display: flex;
+  padding: 0;
+  margin: 5;
+  list-style-type: none;
+}
+
+.tabs button {
+  background: transparent;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-family: 'Fira Code', monospace; /* Change font family here */
+  font-size: 16px; /* Change font size here */
+  color: #ffffff; /* Set the text color */
+  text-align: center;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.tabs button:hover {
+  background-color: #444444; /* Background color on hover */
+  color: #fff; /* Text color on hover */
+}
+
+@font-face {
+  font-family: 'Anigira';
+  src: url('/fonts/Anigira - Display.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Starlight';
+  src: url('/fonts/StarlightRune-Personal Use.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mistic';
+  src: url('/fonts/Mistic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MagicalWorld';
+  src: url('/fonts/Magical World.ttf') format('truetype');
+  font-weight: lighter;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MagicalSource';
+  src: url('/fonts/MagicalSource_Demo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DragonFire';
+  src: url('/fonts/Dragon Fire.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 </style>

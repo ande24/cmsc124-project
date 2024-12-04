@@ -1,20 +1,17 @@
 <template>
   <v-app>
-    <Navbar />
     <v-card>
       <v-layout>
-      
-        <v-main style="height: 100vh; background-color: #343434;">
+        <v-main style="height: 100vh; background-color: #1a1a1a;">
           <!-- Content for each rail -->
-          
           <div class="ide-name">
-            <h1>PormaCode</h1>
+            <h1 id="title">CODEX</h1>
           </div>
-          <div class="new-file" @click="newFileClicked">
-            <button style="border: 4px solid white; border-radius: 40px;background-color: #02123c; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;"> New File </button>
+          <div class="new-file">
+            <button class="button" @click="newFileClicked">Create a new spell</button>
           </div>
-          <div class = "open-existing-file" @click ="openExistingFile" >
-            <button style="border: 4px solid white; border-radius: 40px;background-color: #02123c; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;"> Open File </button>
+          <div class = "open-existing-file"  >
+            <button class="button" @click ="openExistingFile">Invoke an existing spell</button>
           </div>
         </v-main>
       </v-layout>
@@ -58,6 +55,61 @@ export default {
 </script>
 
 <style scoped>
+
+
+#title {
+  margin-top: 5px;
+  font-family: 'Starlight';
+  transform: scaleX(1.5); 
+  letter-spacing: 5px;
+  font-size: 175px;
+  color: #e0e0e0;
+  text-shadow: 0 0 0px #a26ee2, 0 0 5px #a26ee2, 0 0 10px #a26ee2; /* Initial glow */
+  animation: glowingPulse 5s infinite ease-in-out; /* Glowing pulse effect */
+}
+
+@keyframes glowingPulse {
+  0% {
+    text-shadow: 0 0 2px #a26ee2, 0 0 4px #a26ee2, 0 0 8px #a26ee2;
+  }
+  50% {
+    text-shadow: 0 0 8px #a26ee2, 0 0 16px #a26ee2, 0 0 24px #a26ee2;
+  }
+  100% {
+    text-shadow: 0 0 2px #a26ee2, 0 0 4px #a26ee2, 0 0 8px #a26ee2;
+  }
+}
+
+.button {
+  margin-bottom: 25px;
+  background-color: #1a1a1a; /* Dark background */
+  color: #e0e0e0; /* White text */
+  border: none; /* No border by default */
+  padding: 10px 20px;
+  font-size: 45px;
+  transform: scaleX(1.3); 
+  letter-spacing: 3px;
+  font-family: 'Starlight', sans-serif;
+  cursor: pointer;
+  border-radius: 30px;
+  position: relative;
+  box-shadow: none; /* No glow initially */
+  text-shadow: none; /* No glow initially */
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #9b4dca; /* Lighter purple background on hover */
+  color: #1a1a1a; /* Dark text */
+  box-shadow: 0 0 20px #a26ee2, 0 0 30px #a26ee2, 0 0 40px #a26ee2; /* Glowing effect */
+  text-shadow: 0 0 10px #a26ee2, 0 0 20px #a26ee2, 0 0 30px #a26ee2; /* Glow effect only on hover */
+}
+
+.button:active {
+  transform: scale(0.98); /* Slight shrink on click */
+}
+
+
 h2 {
   padding-top: 60px;
   margin-left: 200px;
