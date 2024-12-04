@@ -2198,3 +2198,14 @@ def run(fn, text):
   result = interpreter.visit(ast.node, context)
 
   return result.value, result.error
+
+
+
+if _name_ == "_main_":
+    file_name = "test_program.txt"  # Input program file
+    with open(file_name, "r") as f:
+        code = f.read()
+
+    result, error = run(file_name, code)
+    if error:
+        print(error.as_string())
