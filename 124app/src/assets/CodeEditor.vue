@@ -10,92 +10,32 @@
       />
     </div>
 
-    <!-- Example buttons to trigger actions -->
-    <div class="actions">
-      <button @click="copy">Copy</button>
+    <div>
+      <!-- <button @click="copy">Copy</button>
       <button @click="cut">Cut</button>
       <button @click="paste">Paste</button>
       <button @click="undo">Undo</button>
-      <button @click="redo">Redo</button>
+      <button @click="redo">Redo</button> -->
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, onBeforeUnmount, ref } from "vue";
-import * as monaco from "monaco-editor";
-import { readText } from "@tauri-apps/api/clipboard";
 
-export default defineComponent({
-  name: "MonacoEditor",
-  setup() {
-    // Ref for Monaco Editor instance
-    const editor = ref<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-    // Methods for Clipboard and Undo/Redo Actions
-    const copy = () => {
-      editor.value?.trigger("keyboard", "editor.action.clipboardCopyAction", null);
-    };
+<style scoped>
+/* Additional styling for buttons */
+button {
+  margin: 5px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-    const cut = () => {
-      editor.value?.trigger("keyboard", "editor.action.clipboardCutAction", null);
-    };
-
-    const paste = async () => {
-      console.log("Paste triggered");
-
-      try {
-        const clipboardText = await readText();
-        if (clipboardText) {
-          const editorInstance = editor.value;
-          if (editorInstance) {
-            const selection = editorInstance.getSelection();
-            editorInstance.executeEdits(null, [
-              {
-                range: selection,
-                text: clipboardText,
-                forceMoveMarkers: true,
-              },
-            ]);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to read from clipboard:", err);
-      }
-    };
-
-    const undo = () => {
-      editor.value?.trigger("keyboard", "undo", null);
-    };
-
-    const redo = () => {
-      editor.value?.trigger("keyboard", "redo", null);
-    };
-
-    // Lifecycle Hook: Initialize Monaco Editor
-    onMounted(() => {
-      editor.value = monaco.editor.create(document.getElementById("editor") as HTMLElement, {
-        value: "function helloWorld() {\n    console.log('Hello, world!');\n}",
-        language: "javascript",
-        theme: "vs-dark", // Optional: Use a dark theme
-      });
-    });
-
-    // Lifecycle Hook: Dispose of the editor
-    onBeforeUnmount(() => {
-      editor.value?.dispose();
-    });
-
-    return {
-      copy,
-      cut,
-      paste,
-      undo,
-      redo,
-    };
-  },
-});
-</script>
+button:focus {
+  outline: none;
+  border: 2px solid #9b4dca; /* Focus effect */
+}
+</style>
 
 <script lang="ts" setup>
 import { ref, shallowRef, watch } from 'vue'
@@ -126,8 +66,6 @@ const handleChange = (value) => {
   emit('update:content', value);
 };
 
-
-
 defineExpose({
   formatCode
 });
@@ -137,24 +75,75 @@ function formatCode() {
 }
 </script>
 
+<script lang="ts">
+import { defineComponent, onMounted, onBeforeUnmount, ref } from "vue";
+import * as monaco from "monaco-editor";
+
+export default defineComponent({
+  name: "MonacoEditor",
+  setup() {
+    const editor = ref<monaco.editor.IStandaloneCodeEditor | null>(null);
+
+    // Debug: Log editor initialization
+    onMounted(() => {
+      editor.value = monaco.editor.create(document.getElementById("editor") as HTMLElement, {
+        value: "function helloWorld() {\n    console.log('Hello, world!');\n}",
+        language: "javascript",
+        theme: "vs-dark",
+      });
+
+      console.log("Editor initialized:", editor.value);
+    });
+
+    onBeforeUnmount(() => {
+      editor.value?.dispose();
+    });
+
+    const copy = () => {
+      console.log("Copy triggered");
+      editor.value?.trigger("keyboard", "editor.action.clipboardCopyAction", null);
+    };
+
+    const cut = () => {
+      console.log("Cut triggered");
+      editor.value?.trigger("keyboard", "editor.action.clipboardCutAction", null);
+    };
+
+    const paste = () => {
+      console.log("Paste triggered");
+      editor.value?.trigger("keyboard", "editor.action.clipboardPasteAction", null);
+    };
+
+    const undo = () => {
+      console.log("Undo triggered");
+      editor.value?.trigger("keyboard", "undo", null);
+    };
+
+    const redo = () => {
+      console.log("Redo triggered");
+      editor.value?.trigger("keyboard", "redo", null);
+    };
+
+    return { copy, cut, paste, undo, redo };
+  },
+});
+</script>
+
 <style scoped>
 .editor-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 80%;
 }
 
 #editor {
   flex-grow: 1;
   overflow: auto;
+  transform: scale(1.2);
+  transform-origin: 0 0;
 }
 
 .actions {
-  margin-top: 10px;
-}
-
-button {
-  margin-right: 10px;
-  padding: 5px 10px;
+  margin-top: 50px;
 }
 </style>

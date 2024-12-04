@@ -20,19 +20,18 @@
     },
     "windows": [
     {
-      "title": "main",
+      "title": "Codex",
       "url": "index.html",
       "width": 1920,
       "height": 1080,
-        "maximized": true,
-        "fullscreen": false,
+      "maximized": true,
       "resizable": true,
       "fullscreen": false,
       "visible": false
     },
     {
-      "width": 400,
-      "height": 200,
+      "width": 600,
+      "height": 400,
       "decorations": false,
       "url": "splashscreen.html",
       "label": "splashscreen",
