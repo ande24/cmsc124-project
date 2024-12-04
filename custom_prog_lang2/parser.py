@@ -168,14 +168,14 @@ class Parser:
         # Semicolon
         self.consume('SEMI_COLON')
 
-
         self.symbol_table[var_name.value]['value'] = value
         
         return {
             'type': 'variable_declaration',
             'data_type': data_type.value,
             'variable': var_name.value,
-            'value': value
+            'value': value,
+            'expression': expression
         }
     
     def parse_variable_assignment(self):
