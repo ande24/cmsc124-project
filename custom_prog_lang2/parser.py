@@ -163,7 +163,8 @@ class Parser:
 
         if data_type.value == 'rune':
             if not isinstance(value, str) or len(value) != 1:
-                raise SyntaxError(f"Expected a single character for '{var_name.value}', got {value}")
+                # raise SyntaxError(f"Expected a single character for '{var_name.value}', got {value}")
+                print("DATA TYPEEEE:", data_type, "LENGTHH:", len(value))
         
         # Semicolon
         self.consume('SEMI_COLON')
@@ -290,6 +291,7 @@ class Parser:
         - Parenthesized expressions
         """
         token = self.peek()
+        print("TOKENNN:", token, "TOKEN Type:", token.type)
         
         if token.type == 'NUMBER':
             if '.' in token.value:
@@ -355,15 +357,18 @@ class Parser:
                     raise ZeroDivisionError("Division by zero")
                 return left_val / right_val
         raise ValueError(f"Unknown node type: {node['type']}") 
+
+    def get_symbol_table(self):
+        return self.symbol_table
     
 def main():
     input_code = """
-    tally x;
-    cast spell "Give me a number: ";
-    summon x;
-    tally y;
-    y imbue with x augmented by 4;
-    cast spell y;
+    verse x;
+    verse y;
+    cast spell "Enter value for x: ";
+    cast spell "Enter value for y: ";
+    x imbue with x augmented by y;
+    cast spell x;
     """
     
     # Tokenize
