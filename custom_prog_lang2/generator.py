@@ -47,44 +47,34 @@ class Generator:
         expression = node['expression']
         temp_reg = self.get_temp_register()
 
-        if expression['type'] == 'number':
-            self.text_segment.append(f"li {temp_reg} {expression['value']}")
-        elif expression['type'] == 'variable':
-            self.text_segment.append(f"lw {temp_reg}, {expression['name']}")
-        elif expression['type'] == 'binary_operation':
-            self.handle_binary_operation(expression, {temp_reg})
+        self.evaluate_expression(expression, temp_reg)
         
         self.text_segment.append(f"sw {temp_reg}, {variable}")
 
-    def handle_binary_operation(self, node, target_register):
-        left = node['left']
-        right = node['right']
-        operator = node['operator']
-        allocate_reg_left = self.get_temp_register()
-        allocate_reg_right = self.get_temp_register()
+    def evaluate_expression(self, expression, target_reg):
+        if expression['type'] == 'number':
+            self.text_segment.append(f"li {target_reg}, {expression['value']}")
+        elif expression['type'] == 'variable':
+            self.text_segment.append(f"lw {target_reg}, {expression['name']}")
+        elif expression['type'] == 'binary_operation':
+            left_reg = self.get_temp_register()
+            right_reg = self.get_temp_register()
 
-        # Load left operand
-        if left['type'] == 'number':
-            self.text_segment.append(f"li {allocate_reg_left}, {left['value']}")
-        elif left['type'] == 'variable':
-            self.text_segment.append(f"lw {allocate_reg_left}, {left['name']}")
+            # Evaluate left and right operands
+            self.evaluate_expression(expression['left'], left_reg)
+            self.evaluate_expression(expression['right'], right_reg)
 
-        # Load right operand
-        if right['type'] == 'number':
-            self.text_segment.append(f"li {allocate_reg_right}, {right['value']}")
-        elif right['type'] == 'variable':
-            self.text_segment.append(f"lw {allocate_reg_right}, {right['name']}")
-
-        # Perform operation
-        if operator == '+':
-            self.text_segment.append(f"add {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '-':
-            self.text_segment.append(f"sub {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '*':
-            self.text_segment.append(f"mul {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-        elif operator == '/':
-            self.text_segment.append(f"div {list(target_register)[0]}, {allocate_reg_left}, {allocate_reg_right}")
-            self.text_segment.append(f"mflo {list(target_register)[0]}")
+            # Perform the binary operation
+            operator = expression['operator']
+            if operator == 'augmented by':
+                self.text_segment.append(f"add {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'diminished by':
+                self.text_segment.append(f"sub {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'amplified by':
+                self.text_segment.append(f"mul {target_reg}, {left_reg}, {right_reg}")
+            elif operator == 'fragmented by':
+                self.text_segment.append(f"div {left_reg}, {right_reg}")
+                self.text_segment.append(f"mflo {target_reg}")
 
     def handle_input_statement(self ,node):
         variable = node['variable']
@@ -121,13 +111,21 @@ class Generator:
         return "\n".join(self.mips_code)
 
 def main():
+    # input_code = """
+    # int x;
+    # cout << "Give me a number: ";
+    # cin >> x;
+    # int y;
+    # y = x + 4;
+    # cout << y;
+    # """
     input_code = """
-    int x;
-    cout << "Give me a number: ";
-    cin >> x;
-    int y;
-    y = x + 4;
-    cout << y;
+    tally x;
+    cast spell "Give me a number: ";
+    summon x;
+    tally y;
+    y imbue with x augmented by 4;
+    cast spell y;
     """
 
     tokens = lexer.lexical_analyzer(input_code)

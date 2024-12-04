@@ -63,12 +63,12 @@ def lexical_analyzer(text):
 # Example usage
 if __name__ == "__main__":
     input_code = """
-    tally x = 4;
-    tally y = x + 2 * (3 - 1);
-    verse f = 1.1;
-    portion s = "sdfe"
-    rune c = 's';
-    cout << y;
+    tally x;
+    cast spell "Give me a number: ";
+    summon x;
+    tally y;
+    y imbue with x augmented by 4;
+    cast spell y;
     """
     
     tokens = lexical_analyzer(input_code)
