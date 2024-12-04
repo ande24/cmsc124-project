@@ -162,7 +162,7 @@ const runPythonScript = async () => {
         <v-icon class="icons">mdi-play-box-edit-outline</v-icon>
       </v-btn>
       <div v-if="output" style="color: white;">Output: {{ output }}</div>
-      <div v-if="error" style="color: red;">Error: {{ error }}</div>
+      <div v-if="error" style="color: white;">Error: {{ error }}</div>
     </div>
   </v-toolbar>
 </template>
