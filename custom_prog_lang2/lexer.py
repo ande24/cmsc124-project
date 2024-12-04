@@ -57,7 +57,7 @@ def lexical_analyzer(text):
 # Example usage
 if __name__ == "__main__":
     input_code = """
-    talent x = 4;
+    int x = 4;
     int y = x + 2 * (3 - 1);
     cout << y;
     """
