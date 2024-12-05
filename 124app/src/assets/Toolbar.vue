@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import * as monaco from 'monaco-editor';
+import axios from 'axios';
 
 const emit = defineEmits(['action']);
-const isFileSaved = ref(false);
+// const isFileSaved = ref(false);
 const output = ref(null);
 const error = ref(null);
 
@@ -21,7 +22,7 @@ const openExistingFile = async () => {
       },
     ],
   });
-  isFileSaved.value = false;
+  // isFileSaved.value = false;
   const file = await fileHandle.getFile();
   const content = await file.text();
   emit('action', 'openFile', { name: file.name, content, handle: fileHandle });
@@ -30,7 +31,7 @@ const openExistingFile = async () => {
 // Save file as method
 const saveasFile = async () => {
   emit('action', 'saveasFile');
-  isFileSaved.value = true;
+  // isFileSaved.value = true;
 };
 
 // Clipboard copy method

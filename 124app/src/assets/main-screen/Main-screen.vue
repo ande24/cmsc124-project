@@ -8,11 +8,11 @@
             <h1 id="title">CODEX</h1>
           </div>
           <div class="new-file">
-            <button class="button" @click="newFileClicked">Create a new spell</button>
+            <button class="button" @click="newFileClicked">Get started</button>
           </div>
-          <div class = "open-existing-file"  >
+          <!-- <div class = "open-existing-file"  >
             <button class="button" @click ="openExistingFile">Invoke an existing spell</button>
-          </div>
+          </div> -->
         </v-main>
       </v-layout>
     </v-card>
