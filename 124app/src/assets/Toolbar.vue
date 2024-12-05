@@ -80,6 +80,7 @@ const runPythonScript = async () => {
     const response = await axios.get('http://127.0.0.1:8000/api/compile-File/');
     output.value = response.data.output;
     error.value = response.data.error;
+    console.log(output.value);
   } catch (err) {
     error.value = err.message;
   }
