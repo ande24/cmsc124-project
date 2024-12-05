@@ -7,7 +7,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #282c34; /* Background color of the splash screen */
+    background-color: #1a1a1a; /* Background color of the splash screen */
     color: #1e1e1e;
     z-index: 9999; /* Ensure it's above other content */
   }
@@ -19,19 +19,33 @@
 
   .splash-title {
     margin-top: 20px;
-    margin-bottom: 5px;
-    font-size: 48px;
+    margin-bottom: 0px;
+    font-size: 125px;
     font-weight: lighter;
     color: #ffffff; /* Text color for the title */
-    font-family: "Fira code", monospace;
+    font-family: "Starlight";
+    transform: scaleX(1.5);
+    letter-spacing: 2px;
     animation: fadeIn 1s ease-in-out; /* Animation for title */
+    color: #e0e0e0;
+    text-shadow: 0 0 0px #a26ee2, 0 0 5px #a26ee2, 0 0 10px #a26ee2; /* Initial glow */
   }
 
   .splash-text {
-    font-size: 16px;
+    font-size: 25px;
     font-weight: lighter;
     color: #ffffff; 
-    font-family: "Fira code", monospace;
+    font-family: "Starlight";
+    transform: scaleX(1.5);
+    letter-spacing: 1px;
+     color: #e0e0e0;
+  }
+
+  @font-face {
+    font-family: 'Starlight';
+    src: url('/fonts/StarlightRune-Personal Use.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
   }
 
   #andee {
